@@ -27,14 +27,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Pricing Info */}
-          <div>
-            <p 
-              className="text-yellow-400 font-semibold mb-4"
-              style={{ fontFamily: language === 'ar' ? 'Tajawal, sans-serif' : 'Roboto, sans-serif' }}
-            >
-              {t('footer.pricing')}
-            </p>
-          </div>
+          <div></div>
 
           {/* Social & Contact */}
           <div>

@@ -35,16 +35,6 @@ const translations = {
     'services.ai.title': 'AI Integration & Custom Models',
     'services.ai.desc': 'Custom ML model development, AI agent creation, chatbots, predictive analytics, and intelligent automation systems.',
     
-    // Portfolio
-    'portfolio.title': 'Portfolio',
-    'portfolio.ecommerce.title': 'E-commerce Web App',
-    'portfolio.ecommerce.desc': 'Handcrafted online shopping platform with Arabic language support and custom recommendation engine.',
-    'portfolio.education.title': 'Educational Mobile App',
-    'portfolio.education.desc': 'Interactive learning application with personalized content delivery and progress tracking.',
-    'portfolio.ai.title': 'AI Chatbot & Analytics',
-    'portfolio.ai.desc': 'Custom-trained conversational agent with Arabic dialect support and predictive analytics dashboard.',
-    'portfolio.ai.note': 'Includes custom model training, API deployment, and seamless app integration.',
-    
     // Contact
     'contact.title': 'Contact',
     'contact.description': 'Ready to bring your vision to life? Get in touch for a friendly consultation.',
@@ -57,7 +47,6 @@ const translations = {
     
     // Footer
     'footer.copyright': '© 2025 Ufuq. Handcrafted with Passion.',
-    'footer.pricing': 'Highly affordable custom development — pricing more accessible than typical competitors.',
     
     // Accessibility
     'accessibility.email': 'Email (click to send)',
@@ -92,16 +81,6 @@ const translations = {
     'services.ai.title': 'تكامل الذكاء الاصطناعي والنماذج المخصصة',
     'services.ai.desc': 'تطوير نماذج تعلم آلي مخصصة، إنشاء وكلاء ذكاء اصطناعي، دردشة آلية، تحليلات تنبؤية، وأنظمة تشغيل ذكية.',
     
-    // Portfolio
-    'portfolio.title': 'معرض الأعمال',
-    'portfolio.ecommerce.title': 'تطبيق تجارة إلكترونية',
-    'portfolio.ecommerce.desc': 'منصة تسوق عبر الإنترنت مصنوعة يدوياً مع دعم اللغة العربية ومحرك توصيات مخصص.',
-    'portfolio.education.title': 'تطبيق تعليمي للهاتف',
-    'portfolio.education.desc': 'تطبيق تعلم تفاعلي مع توصيل محتوى مخصص وتتبع التقدم.',
-    'portfolio.ai.title': 'دردشة آلية وتحليلات ذكية',
-    'portfolio.ai.desc': 'وكيل محادثة مدرب مخصصاً مع دعم اللهجة العربية ولوحة تحليلات تنبؤية.',
-    'portfolio.ai.note': 'يشمل تدريب نموذج مخصص، نشر واجهة برمجة، وتكامل سلس مع التطبيق.',
-    
     // Contact
     'contact.title': 'التواصل',
     'contact.description': 'مستعد لتحقيق رؤيتك؟ تواصل معنا للحصول على استشارة ودية.',
@@ -114,7 +93,6 @@ const translations = {
     
     // Footer
     'footer.copyright': '© 2025 أفق. مصنوع بشغف.',
-    'footer.pricing': 'تطوير مخصص بأسعار معقولة جداً — تسعير أكثر إتاحة من المنافسين التقليديين.',
     
     // Accessibility
     'accessibility.email': 'البريد الإلكتروني (انقر للإرسال)',
