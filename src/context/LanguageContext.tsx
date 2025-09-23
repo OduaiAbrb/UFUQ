@@ -43,6 +43,15 @@ const translations = {
     'contact.form.email': 'Email Address',
     'contact.form.message': 'Project Description',
     'contact.form.submit': 'Send Message',
+    'contact.form.sending': 'Sending...',
+    'contact.form.sent': 'Message Sent!',
+    'contact.form.retry': 'Try Again',
+    'contact.form.success': 'Thank you! Your message has been sent successfully. We\'ll get back to you soon.',
+    'contact.form.fallback': 'Email service temporarily unavailable. Opening your email client as backup...',
+    'contact.form.validation.name': 'Please enter your name',
+    'contact.form.validation.email.required': 'Please enter your email address',
+    'contact.form.validation.email.invalid': 'Please enter a valid email address',
+    'contact.form.validation.message': 'Please enter your message',
     'contact.location': 'Amman, Jordan',
     
     // Footer
@@ -89,6 +98,15 @@ const translations = {
     'contact.form.email': 'عنوان البريد الإلكتروني',
     'contact.form.message': 'وصف المشروع',
     'contact.form.submit': 'إرسال الرسالة',
+    'contact.form.sending': 'جاري الإرسال...',
+    'contact.form.sent': 'تم الإرسال!',
+    'contact.form.retry': 'حاول مرة أخرى',
+    'contact.form.success': 'شكراً لك! تم إرسال رسالتك بنجاح. سنتواصل معك قريباً.',
+    'contact.form.fallback': 'خدمة البريد الإلكتروني غير متاحة مؤقتاً. فتح برنامج البريد الإلكتروني كبديل...',
+    'contact.form.validation.name': 'يرجى إدخال اسمك',
+    'contact.form.validation.email.required': 'يرجى إدخال عنوان بريدك الإلكتروني',
+    'contact.form.validation.email.invalid': 'يرجى إدخال عنوان بريد إلكتروني صحيح',
+    'contact.form.validation.message': 'يرجى إدخال رسالتك',
     'contact.location': 'عمّان، الأردن',
     
     // Footer

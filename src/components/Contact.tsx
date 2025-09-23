@@ -1,19 +1,85 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MessageCircle, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, MessageCircle, Send, CheckCircle, AlertCircle, Loader } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import { useLanguage } from '../context/LanguageContext';
+
+// EmailJS Configuration - Replace with your actual values
+const EMAILJS_CONFIG = {
+  SERVICE_ID: 'service_fsweyww', // Replace with your EmailJS service ID
+  TEMPLATE_ID: 'YOUR_TEMPLATE_ID', // Replace with your EmailJS template ID  
+  PUBLIC_KEY: 'YOUR_PUBLIC_KEY' // Replace with your EmailJS public key
+};
+
+interface FormData {
+  name: string;
+  email: string;
+  message: string;
+}
+
+interface FormErrors {
+  name?: string;
+  email?: string;
+  message?: string;
+}
+
+type SubmissionStatus = 'idle' | 'loading' | 'success' | 'error';
 
 const Contact: React.FC = () => {
   const { language, t } = useLanguage();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     message: ''
   });
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [status, setStatus] = useState<SubmissionStatus>('idle');
+  const [statusMessage, setStatusMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Create mailto link with form data
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = t('contact.form.validation.name');
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = t('contact.form.validation.email.required');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = t('contact.form.validation.email.invalid');
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = t('contact.form.validation.message');
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const sendEmailViaEmailJS = async (): Promise<boolean> => {
+    try {
+      const templateParams = {
+        from_name: formData.name,
+        from_email: formData.email,
+        message: formData.message,
+        to_email: 'oduaiabrb@gmail.com'
+      };
+
+      await emailjs.send(
+        EMAILJS_CONFIG.SERVICE_ID,
+        EMAILJS_CONFIG.TEMPLATE_ID,
+        templateParams,
+        EMAILJS_CONFIG.PUBLIC_KEY
+      );
+
+      return true;
+    } catch (error) {
+      console.error('EmailJS failed:', error);
+      return false;
+    }
+  };
+
+  const sendEmailViaMailto = () => {
     const subject = encodeURIComponent(`New Contact Form Submission from ${formData.name}`);
     const body = encodeURIComponent(`
 Name: ${formData.name}
@@ -25,20 +91,97 @@ ${formData.message}
     
     const mailtoLink = `mailto:oduaiabrb@gmail.com?subject=${subject}&body=${body}`;
     window.location.href = mailtoLink;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      message: ''
-    });
+    if (!validateForm()) {
+      return;
+    }
+
+    setStatus('loading');
+    setStatusMessage('');
+
+    // Try EmailJS first
+    const emailJSSuccess = await sendEmailViaEmailJS();
+
+    if (emailJSSuccess) {
+      setStatus('success');
+      setStatusMessage(t('contact.form.success'));
+      setFormData({ name: '', email: '', message: '' });
+      setErrors({});
+      
+      // Reset status after 5 seconds
+      setTimeout(() => {
+        setStatus('idle');
+        setStatusMessage('');
+      }, 5000);
+    } else {
+      // Fallback to mailto
+      setStatus('error');
+      setStatusMessage(t('contact.form.fallback'));
+      
+      // Open mailto as fallback
+      setTimeout(() => {
+        sendEmailViaMailto();
+        setStatus('idle');
+        setStatusMessage('');
+      }, 2000);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+    // Clear error when user starts typing
+    if (errors[name as keyof FormErrors]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: undefined
+      }));
+    }
+  };
+
+  const getStatusIcon = () => {
+    switch (status) {
+      case 'loading':
+        return <Loader className="animate-spin" size={20} />;
+      case 'success':
+        return <CheckCircle className="text-green-500" size={20} />;
+      case 'error':
+        return <AlertCircle className="text-yellow-500" size={20} />;
+      default:
+        return <Send size={20} />;
+    }
+  };
+
+  const getButtonText = () => {
+    switch (status) {
+      case 'loading':
+        return t('contact.form.sending');
+      case 'success':
+        return t('contact.form.sent');
+      case 'error':
+        return t('contact.form.retry');
+      default:
+        return t('contact.form.submit');
+    }
+  };
+
+  const getButtonColor = () => {
+    switch (status) {
+      case 'success':
+        return 'bg-green-600 hover:bg-green-700';
+      case 'error':
+        return 'bg-yellow-600 hover:bg-yellow-700';
+      default:
+        return 'bg-blue-600 hover:bg-blue-700';
+    }
   };
 
   return (
@@ -75,7 +218,7 @@ ${formData.message}
                   className="block text-sm font-semibold text-gray-700 mb-2"
                   style={{ fontFamily: language === 'ar' ? 'Tajawal, sans-serif' : 'Roboto, sans-serif' }}
                 >
-                  {t('contact.form.name')}
+                  {t('contact.form.name')} *
                 </label>
                 <input
                   type="text"
@@ -83,10 +226,19 @@ ${formData.message}
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className={`w-full px-4 py-3 rounded-lg border transition-all ${
+                    errors.name 
+                      ? 'border-red-300 focus:ring-2 focus:ring-red-500' 
+                      : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                  }`}
                   style={{ fontFamily: language === 'ar' ? 'Tajawal, sans-serif' : 'Roboto, sans-serif' }}
-                  required
+                  disabled={status === 'loading'}
                 />
+                {errors.name && (
+                  <p className="mt-1 text-sm text-red-600" style={{ fontFamily: language === 'ar' ? 'Tajawal, sans-serif' : 'Roboto, sans-serif' }}>
+                    {errors.name}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -95,7 +247,7 @@ ${formData.message}
                   className="block text-sm font-semibold text-gray-700 mb-2"
                   style={{ fontFamily: language === 'ar' ? 'Tajawal, sans-serif' : 'Roboto, sans-serif' }}
                 >
-                  {t('contact.form.email')}
+                  {t('contact.form.email')} *
                 </label>
                 <input
                   type="email"
@@ -103,10 +255,19 @@ ${formData.message}
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className={`w-full px-4 py-3 rounded-lg border transition-all ${
+                    errors.email 
+                      ? 'border-red-300 focus:ring-2 focus:ring-red-500' 
+                      : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                  }`}
                   style={{ fontFamily: language === 'ar' ? 'Tajawal, sans-serif' : 'Roboto, sans-serif' }}
-                  required
+                  disabled={status === 'loading'}
                 />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-600" style={{ fontFamily: language === 'ar' ? 'Tajawal, sans-serif' : 'Roboto, sans-serif' }}>
+                    {errors.email}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -115,7 +276,7 @@ ${formData.message}
                   className="block text-sm font-semibold text-gray-700 mb-2"
                   style={{ fontFamily: language === 'ar' ? 'Tajawal, sans-serif' : 'Roboto, sans-serif' }}
                 >
-                  {t('contact.form.message')}
+                  {t('contact.form.message')} *
                 </label>
                 <textarea
                   id="message"
@@ -123,20 +284,50 @@ ${formData.message}
                   rows={5}
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  className={`w-full px-4 py-3 rounded-lg border transition-all resize-none ${
+                    errors.message 
+                      ? 'border-red-300 focus:ring-2 focus:ring-red-500' 
+                      : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                  }`}
                   style={{ fontFamily: language === 'ar' ? 'Tajawal, sans-serif' : 'Roboto, sans-serif' }}
-                  required
+                  disabled={status === 'loading'}
                 ></textarea>
+                {errors.message && (
+                  <p className="mt-1 text-sm text-red-600" style={{ fontFamily: language === 'ar' ? 'Tajawal, sans-serif' : 'Roboto, sans-serif' }}>
+                    {errors.message}
+                  </p>
+                )}
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transform hover:scale-105 transition-all shadow-lg flex items-center justify-center gap-2"
+                disabled={status === 'loading' || status === 'success'}
+                className={`w-full text-white px-6 py-3 rounded-lg font-semibold transform transition-all shadow-lg flex items-center justify-center gap-2 ${getButtonColor()} ${
+                  status === 'loading' || status === 'success' 
+                    ? 'cursor-not-allowed opacity-75' 
+                    : 'hover:scale-105'
+                }`}
                 style={{ fontFamily: language === 'ar' ? 'Tajawal, sans-serif' : 'Roboto, sans-serif' }}
               >
-                <Send size={20} />
-                {t('contact.form.submit')}
+                {getStatusIcon()}
+                {getButtonText()}
               </button>
+
+              {/* Status Message */}
+              {statusMessage && (
+                <div className={`p-4 rounded-lg ${
+                  status === 'success' 
+                    ? 'bg-green-50 text-green-800 border border-green-200' 
+                    : 'bg-yellow-50 text-yellow-800 border border-yellow-200'
+                }`}>
+                  <p 
+                    className="text-sm font-medium"
+                    style={{ fontFamily: language === 'ar' ? 'Tajawal, sans-serif' : 'Roboto, sans-serif' }}
+                  >
+                    {statusMessage}
+                  </p>
+                </div>
+              )}
             </form>
           </div>
 
