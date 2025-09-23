@@ -5,9 +5,9 @@ import { useLanguage } from '../context/LanguageContext';
 
 // EmailJS Configuration - Replace with your actual values
 const EMAILJS_CONFIG = {
-  SERVICE_ID: 'service_fsweyww', // Replace with your EmailJS service ID
-  TEMPLATE_ID: 'YOUR_TEMPLATE_ID', // Replace with your EmailJS template ID  
-  PUBLIC_KEY: 'YOUR_PUBLIC_KEY' // Replace with your EmailJS public key
+  SERVICE_ID: 'service_04aaj0i',
+  TEMPLATE_ID: 'template_default', // You may need to update this with your actual template ID
+  PUBLIC_KEY: 'oduai'
 };
 
 interface FormData {
